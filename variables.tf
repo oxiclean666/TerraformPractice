@@ -9,3 +9,4 @@ variable "vpc" {
   default = "Tims-VPC"
   description = "The name of the VPC that will hold the Kubernetes Cluster"
 }
+
