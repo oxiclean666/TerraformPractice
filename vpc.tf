@@ -18,19 +18,24 @@ module "vpc" {
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/elb"                      = 1
+    Name = "Kubernetes"
   }
 
   private_subnet_tags = {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"             = 1
+    Name = "Kubernetes"
   }
 
   tags = {
-    Name = "KubernetesPractice"
+    Name = "Kubernetes"
   }
 }
 
-resource "aws_internet_gateway" "gw" {
+################################################################################
+# NETWORKING
+################################################################################
+resource "aws_internet_gateway" "k8s" {
  vpc_id = module.vpc.vpc_id
  
  tags = {
@@ -38,3 +43,21 @@ resource "aws_internet_gateway" "gw" {
  }
 }
 
+resource "aws_route_table" "k8s" {
+  vpc_id = module.vpc.vpc_id
+
+  route {
+    cidr_block = "0.0.0.0/24"
+    gateway_id = aws_internet_gateway.k8s.id
+  }
+
+  tags = {
+    Name = "Kubernetes"
+  }
+}
+
+resource "aws_route_table_association" "k8s" {
+  for_each       = toset([for subnet in module.vpc.public_subnets: subnet.id])
+  route_table_id = aws_route_table.k8s.id
+  subnet_id      = each.value
+}
