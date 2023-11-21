@@ -5,8 +5,8 @@ variable "region" {
 }
 
 variable "vpc" {
-  type = string
-  default = "Tims-VPC"
+  type        = string
+  default     = "Tims-VPC"
   description = "The name of the VPC that will hold the Kubernetes Cluster"
 }
 

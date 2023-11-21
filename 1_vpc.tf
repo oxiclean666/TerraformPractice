@@ -2,7 +2,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.1.2"
 
-  name = var.vpc 
+  name = var.vpc
 
   cidr = "10.0.0.0/16"
   azs  = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -18,13 +18,13 @@ module "vpc" {
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/elb"                      = 1
-    Name = "Kubernetes"
+    Name                                          = "Kubernetes"
   }
 
   private_subnet_tags = {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"             = 1
-    Name = "Kubernetes"
+    Name                                          = "Kubernetes"
   }
 
   tags = {
@@ -36,11 +36,11 @@ module "vpc" {
 # NETWORKING
 ################################################################################
 resource "aws_internet_gateway" "k8s" {
- vpc_id = module.vpc.vpc_id
- 
- tags = {
-   Name = "${var.vpc} Internet Gateway"
- }
+  vpc_id = module.vpc.vpc_id
+
+  tags = {
+    Name = "${var.vpc} Internet Gateway"
+  }
 }
 
 resource "aws_route_table" "k8s" {
@@ -57,7 +57,7 @@ resource "aws_route_table" "k8s" {
 }
 
 resource "aws_route_table_association" "k8s" {
-  for_each       = toset([for subnet in module.vpc.public_subnets: subnet.id])
+  for_each       = toset([for subnet in module.vpc.public_subnets : subnet.id])
   route_table_id = aws_route_table.k8s.id
   subnet_id      = each.value
 }
